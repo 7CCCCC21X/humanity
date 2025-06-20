@@ -1,163 +1,117 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>humanity测试网批量查询代币</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Humanity 测试网批量查询</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            padding: 0;
-            background-color: #f4f7f9;
-        }
-        h1 {
-            text-align: center;
-            color: #4caf50;
-        }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background-color: #ffffff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        textarea {
-            width: 100%;
-            height: 150px;
-            padding: 10px;
-            font-size: 14px;
-            border-radius: 4px;
-            border: 1px solid #ccc;
-            color: #000; /* 输入文本为黑色 */
-        }
-        button {
-            width: 100%;
-            padding: 10px;
-            font-size: 16px;
-            background-color: #4caf50;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        table, th, td {
-            border: 1px solid #ddd;
-        }
-        th, td {
-            padding: 12px;
-            text-align: left;
-        }
-        th {
-            background-color: #f4f7f9;
-        }
-        .stats {
-            margin-top: 20px;
-            font-size: 18px;
-            color: #333;
-        }
-        .footer {
-            text-align: center;
-            margin-top: 30px;
-            font-size: 14px;
-        }
+        body{font-family:Arial,Helvetica,sans-serif;margin:20px;background:#f4f7f9}
+        h1{text-align:center;color:#4caf50}
+        .container{max-width:800px;margin:auto;background:#fff;padding:20px;border-radius:8px;box-shadow:0 4px 6px rgba(0,0,0,.1)}
+        textarea{width:100%;height:150px;padding:10px;font-size:14px;border:1px solid #ccc;border-radius:4px;color:#000}
+        button{width:100%;padding:10px;font-size:16px;background:#4caf50;color:#fff;border:none;border-radius:4px;cursor:pointer}
+        button:hover{background:#45a049}
+        table{width:100%;border-collapse:collapse;margin-top:20px}
+        table,th,td{border:1px solid #ddd}
+        th,td{padding:12px;text-align:left}
+        th{background:#f4f7f9}
+        .stats{margin-top:20px;font-size:18px;color:#333}
+        .footer{text-align:center;margin-top:30px;font-size:14px}
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>humanity测试网批量查询代币</h1>
-        <label for="wallets">请输入钱包地址，每行一个地址：</label>
-        <textarea id="wallets" placeholder="例如：0x0000000000000000000000000000000000000000"></textarea>
-        <button onclick="batchQuery()">查询积分</button>
+<div class="container">
+    <h1>Humanity 测试网批量查询代币</h1>
 
-        <div class="stats">
-            <p>查询地址总数: <span id="totalAddresses">0</span></p>
-            <p>有代币地址数量: <span id="withTokens">0</span></p>
-            <p>无代币地址数量: <span id="withoutTokens">0</span></p>
-            <p>代币总和: <span id="totalTokens">0</span> RWT</p>
-        </div>
+    <label for="wallets">请输入钱包地址，每行一个地址：</label>
+    <textarea id="wallets" placeholder="0x0000…"></textarea>
+    <button onclick="batchQuery()">查询积分</button>
 
-        <table id="resultTable">
-            <thead>
-                <tr>
-                    <th>编号</th>
-                    <th>钱包地址</th>
-                    <th>代币数量</th>
-                    <th>最后领取时间</th>
-                </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
-        
-        <div class="footer">
-            <p>作者推特: <a href="https://x.com/0xXIAOc" target="_blank">https://x.com/0xXIAOc</a></p>
-            <p>humanity 注册入口：<a href="https://testnet.humanity.org/login?ref=xiaocdadada" target="_blank">testnet.humanity.org/login?ref=xiaocdadada</a></p>
-        </div>
+    <div class="stats">
+        <p>查询地址总数：<span id="totalAddresses">0</span></p>
+        <p>有代币地址数量：<span id="withTokens">0</span></p>
+        <p>无代币地址数量：<span id="withoutTokens">0</span></p>
+        <p>代币总和：<span id="totalTokens">0</span> RWT</p>
     </div>
 
-    <script>
-        async function batchQuery() {
-            const wallets = document.getElementById('wallets').value.trim().split('\n');
-            const tableBody = document.getElementById('resultTable').getElementsByTagName('tbody')[0];
-            tableBody.innerHTML = ''; // 清空结果区域
+    <table id="resultTable">
+        <thead>
+        <tr><th>编号</th><th>钱包地址</th><th>代币数量</th><th>最后领取时间</th></tr>
+        </thead>
+        <tbody></tbody>
+    </table>
 
-            let totalAddresses = wallets.length;
-            let withTokens = 0;
-            let withoutTokens = 0;
-            let totalTokens = 0;
+    <div class="footer">
+        作者推特：<a href="https://x.com/0xXIAOc" target="_blank">@0xXIAOc</a><br>
+        Humanity 注册入口：
+        <a href="https://testnet.humanity.org/login?ref=xiaocdadada" target="_blank">
+            testnet.humanity.org/login?ref=xiaocdadada
+        </a>
+    </div>
+</div>
 
-            for (let i = 0; i < wallets.length; i++) {
-                const walletAddress = wallets[i].trim();
-                if (walletAddress) {
-                    // 获取代币数据
-                    const response = await fetch(`https://explorer.testnet.humanity.org/api/v2/addresses/${walletAddress}/tokens?type=ERC-20`);
-                    const data = await response.json();
+<script>
+const PROXY = 'https://corsproxy.io/'; // 公共 CORS 代理前缀
 
-                    let tokenValue = '未找到信息';
-                    if (data.items && data.items.length > 0) {
-                        const token = data.items[0].token;
-                        tokenValue = parseInt(data.items[0].value) / Math.pow(10, token.decimals);
-                        totalTokens += tokenValue;
-                        withTokens++;
-                    } else {
-                        withoutTokens++;
-                    }
+async function batchQuery () {
+    const wallets = document
+        .getElementById('wallets')
+        .value
+        .trim()
+        .split('\n')
+        .map(w => w.trim())
+        .filter(Boolean);
 
-                    // 获取最后领取时间
-                    const transferResponse = await fetch(`https://explorer.testnet.humanity.org/api/v2/addresses/${walletAddress}/token-transfers?type=ERC-20`);
-                    const transferData = await transferResponse.json();
-                    let lastClaimTime = '未找到时间';
-                    if (transferData.items && transferData.items.length > 0) {
-                        const lastTransaction = transferData.items[0];
-                        lastClaimTime = new Date(lastTransaction.timestamp).toLocaleString();
-                    }
+    const tbody = document.querySelector('#resultTable tbody');
+    tbody.innerHTML = '';
 
-                    const row = tableBody.insertRow();
-                    row.innerHTML = `
-                        <td>${i + 1}</td>
-                        <td>${walletAddress}</td>
-                        <td>${tokenValue}</td>
-                        <td>${lastClaimTime}</td>
-                    `;
-                }
+    let withTokens = 0, withoutTokens = 0, totalTokens = 0;
+
+    for (const [idx, address] of wallets.entries()) {
+        const tokenURL   = `${PROXY}https://explorer.testnet.humanity.org/api/v2/addresses/${address}/tokens?type=ERC-20`;
+        const txURL      = `${PROXY}https://explorer.testnet.humanity.org/api/v2/addresses/${address}/token-transfers?type=ERC-20`;
+
+        /* 代币余额 */
+        let amount = '未找到信息';
+        try {
+            const { items = [] } = await fetch(tokenURL).then(r => r.json());
+            if (items.length) {
+                const { value, token } = items[0];
+                amount = Number(value) / 10 ** token.decimals;
+                withTokens++;
+                totalTokens += amount;
+            } else {
+                withoutTokens++;
             }
-
-            // 更新统计信息
-            document.getElementById('totalAddresses').textContent = totalAddresses;
-            document.getElementById('withTokens').textContent = withTokens;
-            document.getElementById('withoutTokens').textContent = withoutTokens;
-            document.getElementById('totalTokens').textContent = totalTokens.toFixed(2);
+        } catch (e) {
+            amount = '请求失败';
+            withoutTokens++;
         }
-    </script>
+
+        /* 最后领取时间 */
+        let lastTime = '未找到时间';
+        try {
+            const { items = [] } = await fetch(txURL).then(r => r.json());
+            if (items.length) lastTime = new Date(items[0].timestamp).toLocaleString();
+        } catch (e) {
+            lastTime = '请求失败';
+        }
+
+        /* 渲染表格 */
+        const row = tbody.insertRow();
+        row.innerHTML = `
+            <td>${idx + 1}</td>
+            <td>${address}</td>
+            <td>${amount}</td>
+            <td>${lastTime}</td>`;
+    }
+
+    /* 汇总 */
+    document.getElementById('totalAddresses').textContent = wallets.length;
+    document.getElementById('withTokens').textContent     = withTokens;
+    document.getElementById('withoutTokens').textContent  = withoutTokens;
+    document.getElementById('totalTokens').textContent    = totalTokens.toFixed(2);
+}
+</script>
 </body>
 </html>
