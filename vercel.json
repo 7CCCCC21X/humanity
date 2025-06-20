@@ -1,0 +1,7 @@
+{
+  "functions": {
+    "api/*.js": {
+      "runtime": "nodejs20.x"   // 指定新版 Node
+    }
+  }
+}
