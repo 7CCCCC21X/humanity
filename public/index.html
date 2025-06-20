@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Humanity 测试网批量查询</title>
+  <style>
+    body{font-family:Arial,Helvetica,sans-serif;margin:20px;background:#f4f7f9}
+    h1{text-align:center;color:#4caf50}
+    .container{max-width:800px;margin:auto;background:#fff;padding:20px;border-radius:8px;box-shadow:0 4px 6px rgba(0,0,0,.1)}
+    textarea{width:100%;height:140px;padding:10px;font-size:14px;border:1px solid #ccc;border-radius:4px}
+    button{width:100%;padding:10px;font-size:16px;background:#4caf50;color:#fff;border:none;border-radius:4px;cursor:pointer}
+    button:hover{background:#45a049}
+    table{width:100%;border-collapse:collapse;margin-top:20px}
+    table,th,td{border:1px solid #ddd}
+    th,td{padding:10px;text-align:left;font-size:14px}
+    th{background:#f4f7f9}
+    .stats{margin-top:20px;font-size:16px;color:#333}
+    .footer{text-align:center;margin-top:30px;font-size:14px}
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>Humanity 测试网批量查询</h1>
+
+  <label for="wallets">每行一个地址：</label>
+  <textarea id="wallets" placeholder="0x0000…"></textarea>
+  <button onclick="batchQuery()">查询积分</button>
+
+  <div class="stats">
+    总地址：<span id="totalAddresses">0</span> |
+    有代币：<span id="withTokens">0</span> |
+    无代币：<span id="withoutTokens">0</span> |
+    总和：<span id="totalTokens">0</span> RWT
+  </div>
+
+  <table id="resultTable">
+    <thead>
+      <tr><th>#</th><th>地址</th><th>余额 (RWT)</th><th>最后领取</th></tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <div class="footer">
+    作者推特：<a href="https://x.com/0xXIAOc" target="_blank">@0xXIAOc</a><br>
+    Humanity 注册：<a href="https://testnet.humanity.org/login?ref=xiaocdadada" target="_blank">点击进入</a>
+  </div>
+</div>
+
+<script>
+const PROXY = '/api/proxy?url=';                // 本项目同源，无 CORS
+
+async function batchQuery () {
+  const list = document.getElementById('wallets')
+                        .value.trim()
+                        .split(/\r?\n/)
+                        .map(s => s.trim())
+                        .filter(Boolean);
+
+  const tbody = document.querySelector('#resultTable tbody');
+  tbody.innerHTML = '';
+
+  let withTokens = 0, withoutTokens = 0, sum = 0;
+
+  for (const [i, addr] of list.entries()) {
+    const tokenUrl = encodeURIComponent(
+      `https://explorer.testnet.humanity.org/api/v2/addresses/${addr}/tokens?type=ERC-20`
+    );
+    const txUrl = encodeURIComponent(
+      `https://explorer.testnet.humanity.org/api/v2/addresses/${addr}/token-transfers?type=ERC-20`
+    );
+
+    let amount = '请求错误', last = '—';
+
+    /** 查询余额 */
+    try {
+      const { items = [] } = await fetch(PROXY + tokenUrl).then(r => r.json());
+      if (items.length) {
+        const { value, token } = items[0];
+        amount = Number(value) / 10 ** (token.decimals || 18);
+        withTokens++; sum += amount;
+      } else {
+        amount = 0; withoutTokens++;
+      }
+    } catch { withoutTokens++; }
+
+    /** 查询最后领取时间 */
+    try {
+      const { items = [] } = await fetch(PROXY + txUrl).then(r => r.json());
+      if (items.length) last = new Date(items[0].timestamp).toLocaleString();
+    } catch {}
+
+    /** 写入表格 */
+    const tr = tbody.insertRow();
+    tr.innerHTML = `<td>${i+1}</td><td>${addr}</td><td>${amount}</td><td>${last}</td>`;
+  }
+
+  document.getElementById('totalAddresses').textContent = list.length;
+  document.getElementById('withTokens').textContent     = withTokens;
+  document.getElementById('withoutTokens').textContent  = withoutTokens;
+  document.getElementById('totalTokens').textContent    = sum.toFixed(2);
+}
+</script>
+</body>
+</html>
